@@ -60,6 +60,22 @@ const Admin = () => {
           <p className="mt-2 text-xs text-muted-foreground">
             Your user id: <code>{user.id}</code>
           </p>
+
+          <div className="mt-8 border border-border p-6 bg-muted/20 space-y-4">
+            <p className="text-sm font-semibold text-foreground">💡 How to become an Admin (Supabase Setup):</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Since Supabase uses Row Level Security (RLS) policies, you must assign the admin role to your account in your database. 
+              Go to your <strong>Supabase Dashboard &gt; SQL Editor</strong> and run the following query:
+            </p>
+            <pre className="bg-background border border-border p-3 text-xs overflow-x-auto select-all">
+{`INSERT INTO public.user_roles (user_id, role) 
+VALUES ('${user.id}', 'admin')
+ON CONFLICT (user_id, role) DO NOTHING;`}
+            </pre>
+            <p className="text-xs text-muted-foreground font-light">
+              After running the query in your Supabase dashboard, refresh this page to access the Admin Panel.
+            </p>
+          </div>
         </main>
       </div>
     );

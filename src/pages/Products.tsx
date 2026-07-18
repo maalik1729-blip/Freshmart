@@ -13,6 +13,42 @@ interface DbProduct {
   description: string | null;
 }
 
+const getEmoji = (category: string | null, name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes("water")) return "💧";
+  if (n.includes("juice") || n.includes("orange")) return "🍊";
+  if (n.includes("tea")) return "🍵";
+  if (n.includes("cola") || n.includes("soda")) return "🥤";
+  if (n.includes("chips")) return "🥔";
+  if (n.includes("bar") || n.includes("granola")) return "🌾";
+  if (n.includes("biscuit") || n.includes("cookie")) return "🍪";
+  if (n.includes("popcorn")) return "🍿";
+  if (n.includes("shampoo")) return "🧴";
+  if (n.includes("wash") || n.includes("soap")) return "🧼";
+  if (n.includes("toothpaste")) return "🦷";
+  if (n.includes("moisturiser") || n.includes("cream")) return "🧴";
+  if (n.includes("milk")) return "🥛";
+  if (n.includes("yoghurt")) return "🫙";
+  if (n.includes("butter")) return "🧈";
+  if (n.includes("cheese")) return "🧀";
+  if (n.includes("laundry") || n.includes("detergent")) return "🧺";
+  if (n.includes("paper") || n.includes("towel")) return "🧻";
+  if (n.includes("cleaner") || n.includes("floor")) return "🪣";
+  if (n.includes("peas")) return "🟢";
+  if (n.includes("ice cream")) return "🍦";
+  if (n.includes("pizza")) return "🍕";
+  if (n.includes("veg")) return "🥦";
+
+  const c = (category || "").toLowerCase();
+  if (c.includes("bev")) return "🥤";
+  if (c.includes("snack")) return "🍪";
+  if (c.includes("personal")) return "🧴";
+  if (c.includes("dairy")) return "🥛";
+  if (c.includes("house")) return "🧼";
+  if (c.includes("froz")) return "❄️";
+  return "📦";
+};
+
 const Products = () => {
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -51,10 +87,11 @@ const Products = () => {
               <Link
                 key={p.id}
                 to={`/products/${p.id}`}
-                className="group block border border-border p-4 transition-colors hover:border-foreground"
+                className="group block border border-border p-4 transition-all hover:border-foreground hover:shadow-md"
               >
-                <div className="mb-4 flex aspect-square items-center justify-center bg-muted text-xs uppercase tracking-widest text-muted-foreground">
-                  {p.category ?? "Product"}
+                <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 text-6xl group-hover:scale-105 transition-transform duration-300 select-none relative">
+                  {getEmoji(p.category, p.name)}
+                  <div className="absolute inset-0 bg-black/[0.02]" />
                 </div>
                 <p className="text-xs font-light text-muted-foreground">{p.category}</p>
                 <div className="mt-1">
