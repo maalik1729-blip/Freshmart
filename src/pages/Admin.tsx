@@ -37,6 +37,22 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
 
+  // Rate-limit state (client-side, 5 attempts per 10 min)
+  const RATE_KEY = "admin_login_attempts";
+  const RATE_LIMIT = 5;
+  const LOCKOUT_MS = 10 * 60 * 1000; // 10 minutes
+  const getRateData = () => {
+    try { return JSON.parse(localStorage.getItem(RATE_KEY) || "{}"); } catch { return {}; }
+  };
+  const [lockedUntil, setLockedUntil] = useState<number>(() => {
+    const d = JSON.parse(localStorage.getItem(RATE_KEY) || "{}");
+    return d.lockedUntil || 0;
+  });
+  const [attemptsLeft, setAttemptsLeft] = useState<number>(() => {
+    const d = JSON.parse(localStorage.getItem(RATE_KEY) || "{}");
+    return Math.max(0, RATE_LIMIT - (d.attempts || 0));
+  });
+
   // Tab State
   const [activeTab, setActiveTab] = useState<"products" | "enquiries">("products");
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -88,29 +104,68 @@ const Admin = () => {
     }
   }, [isSuperAdmin]);
 
-  // Handle Admin Login
+  // SHA-256 hash helper (browser native crypto API)
+  const sha256 = async (text: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  };
+
+  // Handle Admin Login with SHA-256 + rate limiting
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check client-side lockout
+    const now = Date.now();
+    const rateData = getRateData();
+    if (rateData.lockedUntil && now < rateData.lockedUntil) {
+      const minsLeft = Math.ceil((rateData.lockedUntil - now) / 60000);
+      toast.error(`Too many attempts. Try again in ${minsLeft} minute${minsLeft !== 1 ? "s" : ""}.`);
+      return;
+    }
+
     setLoginBusy(true);
     try {
+      // Hash password with SHA-256 before sending
+      const hashedPassword = await sha256(password);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: username,
-        password: password,
+        password: hashedPassword,
       });
 
-      if (error) {
-        throw error;
-      }
-      
+      if (error) throw error;
+
       if (!data?.user?.isSuperAdmin) {
         await supabase.auth.signOut();
         throw new Error("You are not authorized as an Admin.");
       }
-      
+
+      // Success — clear rate limit
+      localStorage.removeItem(RATE_KEY);
+      setLockedUntil(0);
+      setAttemptsLeft(RATE_LIMIT);
       toast.success("Successfully authenticated as Admin");
       loadProducts();
     } catch (err: any) {
-      toast.error(err.message || "Invalid credentials");
+      // Track failed attempt
+      const fresh = getRateData();
+      const attempts = (fresh.attempts || 0) + 1;
+      let newLocked = 0;
+      if (attempts >= RATE_LIMIT) {
+        newLocked = Date.now() + LOCKOUT_MS;
+        localStorage.setItem(RATE_KEY, JSON.stringify({ attempts, lockedUntil: newLocked }));
+        setLockedUntil(newLocked);
+        setAttemptsLeft(0);
+        toast.error(`Too many failed attempts. Account locked for 10 minutes.`);
+      } else {
+        localStorage.setItem(RATE_KEY, JSON.stringify({ attempts, lockedUntil: 0 }));
+        setAttemptsLeft(RATE_LIMIT - attempts);
+        toast.error(err.message || "Invalid credentials");
+      }
     } finally {
       setLoginBusy(false);
     }
@@ -298,15 +353,32 @@ const Admin = () => {
             <p className="mb-6 text-xs text-muted-foreground text-center">
               Please authenticate using the designated credentials.
             </p>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
+              {/* Lockout warning */}
+              {lockedUntil > Date.now() && (
+                <div className="bg-red-50 border border-red-200 rounded px-3 py-2 text-xs text-red-700">
+                  🔒 Too many failed attempts. Try again in{" "}
+                  {Math.ceil((lockedUntil - Date.now()) / 60000)} min.
+                </div>
+              )}
+              {attemptsLeft < RATE_LIMIT && attemptsLeft > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-700">
+                  ⚠️ {attemptsLeft} attempt{attemptsLeft !== 1 ? "s" : ""} remaining before 10-min lockout.
+                </div>
+              )}
               <div>
                 <Label htmlFor="sa-user">Username</Label>
                 <Input
                   id="sa-user"
                   required
-                  placeholder="admin"
+                  placeholder="Username"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  disabled={lockedUntil > Date.now()}
                 />
               </div>
               <div>
@@ -315,12 +387,21 @@ const Admin = () => {
                   id="sa-pass"
                   type="password"
                   required
-                  placeholder="••••"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={lockedUntil > Date.now()}
                 />
               </div>
-              <Button type="submit" disabled={loginBusy} className="w-full rounded-none h-11">
+              <p className="text-[10px] text-muted-foreground text-right">
+                🔐 Password hashed with SHA-256 before transmission
+              </p>
+              <Button
+                type="submit"
+                disabled={loginBusy || lockedUntil > Date.now()}
+                className="w-full rounded-none h-11"
+              >
                 {loginBusy ? "Authenticating…" : "Login"}
               </Button>
             </form>

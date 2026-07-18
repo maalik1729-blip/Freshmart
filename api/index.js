@@ -3,6 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const dns = require('dns');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
+
+// SHA-256 helper (server-side, Node built-in)
+const sha256 = (text) => crypto.createHash('sha256').update(text).digest('hex');
+// Pre-computed SHA-256 of 'admin' — used to verify super-admin login
+const SUPER_ADMIN_PASS_HASH = sha256('admin');
 
 // Use IPv4 DNS to avoid MongoDB Atlas SRV resolution issues in serverless
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -88,6 +94,15 @@ const Enquiry = mongoose.models.Enquiry || mongoose.model('Enquiry', EnquirySche
 const jwt = require('jsonwebtoken');
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
+// RateLimit — tracks failed login attempts per IP
+const RateLimitSchema = new mongoose.Schema({
+  ip: { type: String, required: true, unique: true },
+  attempts: { type: Number, default: 0 },
+  lockedUntil: { type: Date, default: null },
+  updatedAt: { type: Date, default: Date.now },
+});
+const RateLimit = mongoose.models.RateLimit || mongoose.model('RateLimit', RateLimitSchema);
+
 // ── Auth middleware ──────────────────────────────────────────────────────────
 const protect = async (req, res, next) => {
   const auth = req.headers.authorization;
@@ -143,21 +158,55 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  if (email === 'admin' && password === 'admin') {
-    return res.json({
-      token: generateToken('super-admin-id-1729'),
-      user: { id: 'super-admin-id-1729', email: 'admin', display_name: 'Super Admin', isAdmin: true, isSuperAdmin: true, created_at: new Date() },
-    });
-  }
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+  const RATE_LIMIT = 5;
+  const LOCKOUT_MS = 10 * 60 * 1000; // 10 minutes
+
   try {
+    // ── Server-side rate limit check ──────────────────────────────────────
+    let rl = await RateLimit.findOne({ ip });
+    if (rl && rl.lockedUntil && rl.lockedUntil > new Date()) {
+      const minsLeft = Math.ceil((rl.lockedUntil - Date.now()) / 60000);
+      return res.status(429).json({ message: `Too many failed attempts. Try again in ${minsLeft} minute(s).` });
+    }
+
+    // ── Super admin check (password is SHA-256 hash of 'admin') ──────────
+    if (email === 'admin' && password === SUPER_ADMIN_PASS_HASH) {
+      // Clear rate limit on success
+      if (rl) await RateLimit.deleteOne({ ip });
+      return res.json({
+        token: generateToken('super-admin-id-1729'),
+        user: { id: 'super-admin-id-1729', email: 'admin', display_name: 'Super Admin', isAdmin: true, isSuperAdmin: true, created_at: new Date() },
+      });
+    }
+
+    // ── Regular user check ────────────────────────────────────────────────
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
+      if (rl) await RateLimit.deleteOne({ ip });
       return res.json({
         token: generateToken(user._id),
         user: { id: user._id, email: user.email, display_name: user.display_name, isAdmin: user.isAdmin, isSuperAdmin: user.isSuperAdmin || false, created_at: user.created_at },
       });
     }
-    res.status(401).json({ message: 'Invalid email or password' });
+
+    // ── Failed attempt — increment counter ────────────────────────────────
+    const attempts = (rl?.attempts || 0) + 1;
+    let lockedUntil = null;
+    if (attempts >= RATE_LIMIT) {
+      lockedUntil = new Date(Date.now() + LOCKOUT_MS);
+    }
+    await RateLimit.findOneAndUpdate(
+      { ip },
+      { attempts, lockedUntil, updatedAt: new Date() },
+      { upsert: true, new: true }
+    );
+
+    if (lockedUntil) {
+      return res.status(429).json({ message: 'Too many failed attempts. Account locked for 10 minutes.' });
+    }
+    res.status(401).json({ message: `Invalid credentials. ${RATE_LIMIT - attempts} attempt(s) remaining.` });
+
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
