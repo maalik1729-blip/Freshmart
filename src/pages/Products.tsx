@@ -47,30 +47,19 @@ const Products = () => {
         {!loaded ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {combined.map((p) => {
-              const img = p.isPlaceholder 
-                ? p.imageUrl 
-                : (p.image_url || "https://images.unsplash.com/photo-1540340061720-c2f3df3273ee?w=600&auto=format&fit=crop&q=80");
               return (
                 <Link
                   key={p.id}
                   to={`/products/${p.id}`}
-                  className="group block border border-border p-4 transition-all hover:border-foreground hover:shadow-md"
+                  className="group block border border-border p-6 transition-all hover:border-foreground hover:shadow-md space-y-2 bg-muted/5"
                 >
-                  <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
-                    <img 
-                      src={img} 
-                      alt={p.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/[0.02]" />
+                  <p className="text-xs font-light text-muted-foreground uppercase tracking-widest">{p.category}</p>
+                  <div className="pt-1">
+                    <h3 className="text-base font-medium text-foreground group-hover:underline">{p.name}</h3>
                   </div>
-                  <p className="text-xs font-light text-muted-foreground">{p.category}</p>
-                  <div className="mt-1">
-                    <h3 className="text-sm font-medium">{p.name}</h3>
-                  </div>
-                  <p className="mt-2 line-clamp-2 text-xs font-light text-muted-foreground">
+                  <p className="line-clamp-3 text-xs font-light text-muted-foreground leading-relaxed pt-1">
                     {p.description}
                   </p>
                 </Link>

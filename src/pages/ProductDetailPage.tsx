@@ -41,9 +41,6 @@ const ProductDetailPage = () => {
       });
   }, [id]);
 
-  const img = product?.isPlaceholder 
-    ? product.imageUrl 
-    : (product?.image_url || "https://images.unsplash.com/photo-1540340061720-c2f3df3273ee?w=600&auto=format&fit=crop&q=80");
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,23 +55,17 @@ const ProductDetailPage = () => {
         ) : !product ? (
           <p className="mt-8">Product not found.</p>
         ) : (
-          <div className="mt-8 grid gap-10 md:grid-cols-2">
-            <div className="flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative border border-border">
-              <img 
-                src={img} 
-                alt={product.name} 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/[0.02]" />
-            </div>
+          <div className="mt-12 max-w-xl mx-auto border border-border p-8 md:p-12 space-y-6 bg-muted/5">
             <div>
-              <p className="text-sm text-muted-foreground uppercase tracking-wider">{product.category}</p>
-              <h1 className="mt-1 text-3xl font-light">{product.name}</h1>
-              <p className="mt-6 text-sm font-light leading-relaxed text-muted-foreground">
-                {product.description}
-              </p>
-              <Link to="/enquiry">
-                <Button className="mt-10 h-12 w-full rounded-none">Enquire about this product</Button>
+              <p className="text-xs font-light text-muted-foreground uppercase tracking-widest">{product.category}</p>
+              <h1 className="mt-2 text-3xl font-light text-foreground">{product.name}</h1>
+            </div>
+            <p className="text-sm font-light leading-relaxed text-muted-foreground">
+              {product.description}
+            </p>
+            <div className="pt-4">
+              <Link to="/enquiry" className="block">
+                <Button className="h-12 w-full rounded-none">Enquire about this product</Button>
               </Link>
             </div>
           </div>
