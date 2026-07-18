@@ -573,10 +573,7 @@ const Admin = () => {
                     <h3 className="text-3xl font-light text-amber-800">{pendingCount}</h3>
                   </div>
                   <div className="h-10 w-10 rounded-full bg-amber-100/80 flex items-center justify-center text-amber-600 shrink-0">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
+                    <Clock className="h-5 w-5" />
                   </div>
                 </div>
 
@@ -589,9 +586,7 @@ const Admin = () => {
                     <h3 className="text-3xl font-light text-green-800">{interestedCount}</h3>
                   </div>
                   <div className="h-10 w-10 rounded-full bg-green-100/80 flex items-center justify-center text-green-600 shrink-0">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    <UserCheck className="h-5 w-5" />
                   </div>
                 </div>
 
@@ -604,10 +599,7 @@ const Admin = () => {
                     <h3 className="text-3xl font-light text-red-800">{notInterestedCount}</h3>
                   </div>
                   <div className="h-10 w-10 rounded-full bg-red-100/80 flex items-center justify-center text-red-600 shrink-0">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                    <UserX className="h-5 w-5" />
                   </div>
                 </div>
               </div>
