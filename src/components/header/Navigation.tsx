@@ -1,7 +1,6 @@
-import { ArrowRight, X, Minus, Plus, Search, Heart, ShoppingBag as ShoppingBagIcon, Menu } from "lucide-react";
+import { ArrowRight, X, Search, Heart, ShoppingBag as ShoppingBagIcon, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ShoppingBag from "./ShoppingBag";
 import pantheonImage from "@/assets/pantheon.jpg";
