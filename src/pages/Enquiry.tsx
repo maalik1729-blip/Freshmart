@@ -146,7 +146,7 @@ const Enquiry = () => {
                         pattern="[A-Za-z\s\-\.]{2,100}"
                         title="Full name must be at least 2 characters and contain only letters, spaces, hyphens, or dots"
                         value={form.name}
-                        onChange={(e) => set("name", e.target.value)}
+                        onChange={(e) => set("name", e.target.value.replace(/[^A-Za-z\s\-\.]/g, ""))}
                       />
                     </div>
                     <div className="space-y-1">
@@ -173,7 +173,7 @@ const Enquiry = () => {
                         pattern="[0-9]{7,15}"
                         title="Please enter a valid phone number containing only numbers (7 to 15 digits)"
                         value={form.phone}
-                        onChange={(e) => set("phone", e.target.value)}
+                        onChange={(e) => set("phone", e.target.value.replace(/[^0-9]/g, ""))}
                       />
                     </div>
                     <div className="space-y-1">
@@ -185,7 +185,7 @@ const Enquiry = () => {
                         pattern="[A-Za-z0-9\s\-\.&,]{0,100}"
                         title="Company name can contain letters, numbers, spaces, hyphens, dots, ampersands, or commas"
                         value={form.company}
-                        onChange={(e) => set("company", e.target.value)}
+                        onChange={(e) => set("company", e.target.value.replace(/[^A-Za-z0-9\s\-\.&,]/g, ""))}
                       />
                     </div>
                   </div>
@@ -255,7 +255,7 @@ const Enquiry = () => {
                         pattern="[0-9]+[\s]?[A-Za-z\s,\.]{0,40}"
                         title="Start with a number followed by an optional unit (e.g. 100 units, 5 cases, 50 kg)"
                         value={form.quantity}
-                        onChange={(e) => set("quantity", e.target.value)}
+                        onChange={(e) => set("quantity", e.target.value.replace(/[^A-Za-z0-9\s,\.]/g, ""))}
                       />
                     </div>
                   </div>
