@@ -43,17 +43,6 @@ const SimpleNav = () => {
               </Button>
             </Link>
           )}
-          {user ? (
-            <Button size="sm" variant="ghost" onClick={signOut} className="rounded-none">
-              Sign out
-            </Button>
-          ) : (
-            <Link to="/auth">
-              <Button size="sm" variant="ghost" className="rounded-none">
-                Sign in
-              </Button>
-            </Link>
-          )}
         </div>
       </div>
 
