@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const cloudinary = require('../config/cloudinary');
 const Product = require('../models/Product');
-const { protect, adminOnly } = require('../middleware/auth');
+const { protect, superAdminOnly } = require('../middleware/auth');
 
 // Multer in-memory storage for handling uploaded files
 const storage = multer.memoryStorage();
@@ -56,8 +56,8 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   POST /api/products
-// @desc    Create a product (Admin only, supports image file upload to Cloudinary)
-router.post('/', protect, adminOnly, upload.single('image'), async (req, res) => {
+// @desc    Create a product (Super Admin only, supports image file upload to Cloudinary)
+router.post('/', protect, superAdminOnly, upload.single('image'), async (req, res) => {
   const { name, category, description, price } = req.body;
   try {
     let imageUrl = '';
@@ -105,9 +105,61 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
   }
 });
 
+// @route   PUT /api/products/:id
+// @desc    Update a product (Super Admin only, supports optional new image upload to Cloudinary)
+router.put('/:id', protect, superAdminOnly, upload.single('image'), async (req, res) => {
+  const { name, category, description, price } = req.body;
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    product.name = name || product.name;
+    product.category = category || product.category;
+    product.description = description !== undefined ? description : product.description;
+    product.price = price !== undefined ? Number(price) : product.price;
+
+    if (req.file) {
+      // Upload new image file buffer to Cloudinary folder 'freshmart'
+      const uploadPromise = new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'freshmart' },
+          (error, result) => {
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      const uploadResult = await uploadPromise;
+      product.imageUrl = uploadResult.secure_url;
+    }
+
+    await product.save();
+
+    res.json({
+      id: product._id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      description: product.description,
+      imageUrl: product.imageUrl,
+      created_at: product.created_at
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @route   DELETE /api/products/:id
-// @desc    Delete a product (Admin only)
-router.delete('/:id', protect, adminOnly, async (req, res) => {
+// @desc    Delete a product (Super Admin only)
+router.delete('/:id', protect, superAdminOnly, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {

