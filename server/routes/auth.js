@@ -19,10 +19,13 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    const isFirstUser = (await User.countDocuments({})) === 0;
+
     const user = await User.create({
       email,
       password,
-      display_name: display_name || ''
+      display_name: display_name || '',
+      isAdmin: isFirstUser
     });
 
     if (user) {
