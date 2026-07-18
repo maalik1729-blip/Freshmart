@@ -48,29 +48,49 @@ const Enquiry = () => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const set = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const text =
-      `🛒 *FreshMart Product Enquiry*\n\n` +
-      `👤 Name: ${form.name}\n` +
-      `📧 Email: ${form.email}\n` +
-      `📱 Phone: ${form.phone || "N/A"}\n` +
-      `🏢 Company: ${form.company || "N/A"}\n\n` +
-      `📋 Enquiry Type: ${form.enquiryType}\n` +
-      `🗂 Category: ${form.category}\n` +
-      `📦 Product: ${form.product}\n` +
-      `🔢 Quantity: ${form.quantity}\n\n` +
-      `💬 Message: ${form.message}`;
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    window.open(
-      `https://wa.me/919940089442?text=${encodeURIComponent(text)}`,
-      "_blank"
-    );
-    toast.success("Opening WhatsApp to send your product enquiry…");
-    setSubmitted(true);
+      if (!response.ok) {
+        throw new Error("Failed to save enquiry to server");
+      }
+
+      const text =
+        `🛒 *FreshMart Product Enquiry*\n\n` +
+        `👤 Name: ${form.name}\n` +
+        `📧 Email: ${form.email}\n` +
+        `📱 Phone: ${form.phone || "N/A"}\n` +
+        `🏢 Company: ${form.company || "N/A"}\n\n` +
+        `📋 Enquiry Type: ${form.enquiryType}\n` +
+        `🗂 Category: ${form.category}\n` +
+        `📦 Product: ${form.product}\n` +
+        `🔢 Quantity: ${form.quantity}\n\n` +
+        `💬 Message: ${form.message}`;
+
+      window.open(
+        `https://wa.me/919940089442?text=${encodeURIComponent(text)}`,
+        "_blank"
+      );
+      toast.success("Opening WhatsApp to send your product enquiry…");
+      setSubmitted(true);
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -251,8 +271,8 @@ const Enquiry = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-none text-sm font-medium">
-                  📲 Send Enquiry via WhatsApp
+                <Button type="submit" disabled={submitting} className="w-full h-12 rounded-none text-sm font-medium">
+                  {submitting ? "Processing Enquiry…" : "📲 Send Enquiry via WhatsApp"}
                 </Button>
               </form>
             )}
