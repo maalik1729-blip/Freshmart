@@ -1,4 +1,4 @@
-require('dotenv').config();
+// Vercel injects env vars directly — dotenv not needed in serverless
 const express = require('express');
 const cors = require('cors');
 const dns = require('dns');
