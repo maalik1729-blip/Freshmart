@@ -278,6 +278,31 @@ const Admin = () => {
     }
   };
 
+  // Handle Update Enquiry Interest Status
+  const handleUpdateInterest = async (id: string, value: string) => {
+    try {
+      const token = localStorage.getItem("freshmart_token");
+      const response = await fetch(`/api/enquiries/${id}/interest`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ interestStatus: value }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to update interest status");
+      }
+
+      toast.success("Interest status updated!");
+      loadEnquiries();
+    } catch (err: any) {
+      toast.error(err.message || "Error updating interest status");
+    }
+  };
+
   if (loading) return null;
 
   return (
@@ -488,13 +513,14 @@ const Admin = () => {
                         <th className="px-6 py-3 font-medium">Product / Quantity</th>
                         <th className="px-6 py-3 font-medium">Message</th>
                         <th className="px-6 py-3 font-medium">Submitted</th>
+                        <th className="px-6 py-3 font-medium">Interest</th>
                         <th className="px-6 py-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border font-light">
                       {enquiries.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
+                          <td colSpan={7} className="px-6 py-10 text-center text-muted-foreground">
                             No enquiries found yet.
                           </td>
                         </tr>
@@ -535,6 +561,23 @@ const Admin = () => {
                             </td>
                             <td className="px-6 py-4 text-xs text-muted-foreground">
                               {new Date(e.created_at).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4">
+                              <select
+                                value={e.interestStatus || "unmarked"}
+                                onChange={(evt) => handleUpdateInterest(e._id, evt.target.value)}
+                                className={`text-xs border px-2.5 py-1 focus:outline-none rounded-none font-medium transition-colors ${
+                                  e.interestStatus === "interested"
+                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    : e.interestStatus === "not_interested"
+                                    ? "bg-red-50 text-red-700 border-red-200"
+                                    : "bg-background text-foreground border-input"
+                                }`}
+                              >
+                                <option value="unmarked">Unmarked</option>
+                                <option value="interested">Interested</option>
+                                <option value="not_interested">Not Interested</option>
+                              </select>
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-1.5">
