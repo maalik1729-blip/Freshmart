@@ -255,51 +255,28 @@ const Admin = () => {
     }
   };
 
-  // Handle Accept Enquiry
-  const handleAcceptEnquiry = async (id: string) => {
+  // Handle Update Enquiry Status
+  const handleUpdateStatus = async (id: string, value: string) => {
     try {
       const token = localStorage.getItem("freshmart_token");
-      const response = await fetch(`/api/enquiries/${id}/accept`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.message || "Failed to accept enquiry");
-      }
-
-      toast.success("Enquiry accepted and kept in database!");
-      loadEnquiries();
-    } catch (err: any) {
-      toast.error(err.message || "Error accepting enquiry");
-    }
-  };
-
-  // Handle Update Enquiry Interest Status
-  const handleUpdateInterest = async (id: string, value: string) => {
-    try {
-      const token = localStorage.getItem("freshmart_token");
-      const response = await fetch(`/api/enquiries/${id}/interest`, {
+      const response = await fetch(`/api/enquiries/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ interestStatus: value }),
+        body: JSON.stringify({ status: value }),
       });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.message || "Failed to update interest status");
+        throw new Error(errData.message || "Failed to update status");
       }
 
-      toast.success("Interest status updated!");
+      toast.success("Enquiry status updated!");
       loadEnquiries();
     } catch (err: any) {
-      toast.error(err.message || "Error updating interest status");
+      toast.error(err.message || "Error updating status");
     }
   };
 
@@ -513,7 +490,7 @@ const Admin = () => {
                         <th className="px-6 py-3 font-medium">Product / Quantity</th>
                         <th className="px-6 py-3 font-medium">Message</th>
                         <th className="px-6 py-3 font-medium">Submitted</th>
-                        <th className="px-6 py-3 font-medium">Interest</th>
+                        <th className="px-6 py-3 font-medium">Status</th>
                         <th className="px-6 py-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
@@ -534,20 +511,9 @@ const Admin = () => {
                               {e.company && <div className="text-xs text-muted-foreground">Company: {e.company}</div>}
                             </td>
                             <td className="px-6 py-4">
-                              <div className="flex flex-col gap-1.5">
-                                <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary border border-primary/25 rounded-none font-medium">
-                                  {e.enquiryType}
-                                </span>
-                                {e.status === "accepted" ? (
-                                  <span className="inline-block text-[10px] uppercase font-bold text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 w-max">
-                                    Accepted
-                                  </span>
-                                ) : (
-                                  <span className="inline-block text-[10px] uppercase font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 w-max">
-                                    Pending
-                                  </span>
-                                )}
-                              </div>
+                              <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary border border-primary/25 rounded-none font-medium">
+                                {e.enquiryType}
+                              </span>
                             </td>
                             <td className="px-6 py-4">
                               <div className="font-medium text-foreground">{e.product || "—"}</div>
@@ -564,37 +530,23 @@ const Admin = () => {
                             </td>
                             <td className="px-6 py-4">
                               <select
-                                value={e.interestStatus || "unmarked"}
-                                onChange={(evt) => handleUpdateInterest(e._id, evt.target.value)}
+                                value={e.status || "pending"}
+                                onChange={(evt) => handleUpdateStatus(e._id, evt.target.value)}
                                 className={`text-xs border px-2.5 py-1 focus:outline-none rounded-none font-medium transition-colors ${
-                                  e.interestStatus === "interested"
+                                  e.status === "interested"
                                     ? "bg-green-50 text-green-700 border-green-200"
-                                    : e.interestStatus === "not_interested"
+                                    : e.status === "not_interested"
                                     ? "bg-red-50 text-red-700 border-red-200"
-                                    : "bg-background text-foreground border-input"
+                                    : "bg-amber-50 text-amber-700 border-amber-200"
                                 }`}
                               >
-                                <option value="unmarked">Unmarked</option>
+                                <option value="pending">Pending</option>
                                 <option value="interested">Interested</option>
                                 <option value="not_interested">Not Interested</option>
                               </select>
                             </td>
                             <td className="px-6 py-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  disabled={e.status === "accepted"}
-                                  className={`h-8 w-8 ${
-                                    e.status === "accepted"
-                                      ? "text-green-300 cursor-not-allowed"
-                                      : "text-green-600 hover:text-green-700 hover:bg-green-50"
-                                  }`}
-                                  onClick={() => handleAcceptEnquiry(e._id)}
-                                  title="Accept & Keep Enquiry"
-                                >
-                                  <Check className="h-5 w-5" />
-                                </Button>
+                              <div className="flex items-center justify-end">
                                 <Button
                                   variant="ghost"
                                   size="icon"

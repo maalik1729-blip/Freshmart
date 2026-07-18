@@ -57,35 +57,19 @@ router.delete('/:id', protect, superAdminOnly, async (req, res) => {
   }
 });
 
-// @route   PUT /api/enquiries/:id/accept
-// @desc    Accept/keep an enquiry (Super Admin only)
-router.put('/:id/accept', protect, superAdminOnly, async (req, res) => {
-  try {
-    const enquiry = await Enquiry.findById(req.params.id);
-    if (!enquiry) {
-      return res.status(404).json({ message: 'Enquiry not found' });
-    }
-    enquiry.status = 'accepted';
-    await enquiry.save();
-    res.json(enquiry);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// @route   PUT /api/enquiries/:id/interest
-// @desc    Update enquiry interest status (Super Admin only)
-router.put('/:id/interest', protect, superAdminOnly, async (req, res) => {
-  const { interestStatus } = req.body;
-  if (!['unmarked', 'interested', 'not_interested'].includes(interestStatus)) {
-    return res.status(400).json({ message: 'Invalid interest status' });
+// @route   PUT /api/enquiries/:id/status
+// @desc    Update enquiry lead status (Super Admin only)
+router.put('/:id/status', protect, superAdminOnly, async (req, res) => {
+  const { status } = req.body;
+  if (!['pending', 'interested', 'not_interested'].includes(status)) {
+    return res.status(400).json({ message: 'Invalid status' });
   }
   try {
     const enquiry = await Enquiry.findById(req.params.id);
     if (!enquiry) {
       return res.status(404).json({ message: 'Enquiry not found' });
     }
-    enquiry.interestStatus = interestStatus;
+    enquiry.status = status;
     await enquiry.save();
     res.json(enquiry);
   } catch (error) {
