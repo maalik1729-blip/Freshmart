@@ -14,18 +14,6 @@ interface DbProduct {
   imageUrl?: string;
 }
 
-const getCategoryEmoji = (category: string | null) => {
-  switch (category) {
-    case "Beverages": return "💧";
-    case "Snacks": return "🍪";
-    case "Personal Care": return "🧴";
-    case "Dairy": return "🥛";
-    case "Household": return "🧼";
-    case "Frozen Foods": return "🍕";
-    default: return "📦";
-  }
-};
-
 const Products = () => {
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -66,13 +54,11 @@ const Products = () => {
                 to={`/products/${p.id}`}
                 className="group block border border-border p-4 transition-colors hover:border-foreground"
               >
-                <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
+                <div className="mb-4 flex aspect-square items-center justify-center bg-muted text-xs uppercase tracking-widest text-muted-foreground overflow-hidden relative">
                   {p.imageUrl ? (
                     <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <span className="text-5xl group-hover:scale-110 transition-transform duration-300 select-none">
-                      {getCategoryEmoji(p.category)}
-                    </span>
+                    <span>{p.category ?? "Product"}</span>
                   )}
                   <div className="absolute inset-0 bg-black/[0.02]" />
                 </div>

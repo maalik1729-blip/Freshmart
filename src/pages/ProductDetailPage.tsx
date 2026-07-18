@@ -15,18 +15,6 @@ interface Product {
   imageUrl?: string;
 }
 
-const getCategoryEmoji = (category: string | null) => {
-  switch (category) {
-    case "Beverages": return "💧";
-    case "Snacks": return "🍪";
-    case "Personal Care": return "🧴";
-    case "Dairy": return "🥛";
-    case "Household": return "🧼";
-    case "Frozen Foods": return "🍕";
-    default: return "📦";
-  }
-};
-
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
@@ -65,11 +53,11 @@ const ProductDetailPage = () => {
           <p className="mt-8">Product not found.</p>
         ) : (
           <div className="mt-8 grid gap-10 md:grid-cols-2">
-            <div className="flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
+            <div className="flex aspect-square items-center justify-center bg-muted text-xs uppercase tracking-widest text-muted-foreground overflow-hidden relative">
               {product.imageUrl ? (
                 <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-8xl select-none">{getCategoryEmoji(product.category)}</span>
+                <span>{product.category ?? "Product"}</span>
               )}
               <div className="absolute inset-0 bg-black/[0.02]" />
             </div>
