@@ -29,7 +29,7 @@ const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<UserRow[]>([]);
-  const [form, setForm] = useState({ name: "", price: "", category: "Rings", description: "" });
+  const [form, setForm] = useState({ name: "", category: "Beverages", description: "" });
   const [busy, setBusy] = useState(false);
 
   const loadAll = async () => {
@@ -69,14 +69,14 @@ const Admin = () => {
     setBusy(true);
     const { error } = await supabase.from("products").insert({
       name: form.name.trim(),
-      price: Number(form.price),
+      price: 0,
       category: form.category,
       description: form.description.trim() || null,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Product added");
-    setForm({ name: "", price: "", category: "Rings", description: "" });
+    setForm({ name: "", category: "Beverages", description: "" });
     loadAll();
   };
 
@@ -112,20 +112,16 @@ const Admin = () => {
                   onChange={(e) => setForm({ ...form, name: e.target.value })} />
               </div>
               <div>
-                <Label htmlFor="p-price">Price (€)</Label>
-                <Input id="p-price" type="number" min="0" step="0.01" required
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })} />
-              </div>
-              <div>
                 <Label htmlFor="p-cat">Category</Label>
                 <select id="p-cat" className="w-full border border-input bg-background px-3 py-2 text-sm"
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                  <option>Rings</option>
-                  <option>Earrings</option>
-                  <option>Bracelets</option>
-                  <option>Necklaces</option>
+                  <option>Beverages</option>
+                  <option>Snacks</option>
+                  <option>Personal Care</option>
+                  <option>Dairy</option>
+                  <option>Household</option>
+                  <option>Frozen Foods</option>
                 </select>
               </div>
               <div>
@@ -151,7 +147,7 @@ const Admin = () => {
                   <div>
                     <p className="text-sm font-medium">{p.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {p.category} · €{Number(p.price).toLocaleString()}
+                      {p.category}
                     </p>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => deleteProduct(p.id)}>
