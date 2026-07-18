@@ -42,6 +42,23 @@ router.get('/', protect, superAdminOnly, async (req, res) => {
   }
 });
 
+// @route   PATCH /api/enquiries/:id/status
+// @desc    Update an enquiry status (Super Admin only)
+router.patch('/:id/status', protect, superAdminOnly, async (req, res) => {
+  const { status } = req.body;
+  try {
+    const enquiry = await Enquiry.findById(req.params.id);
+    if (!enquiry) {
+      return res.status(404).json({ message: 'Enquiry not found' });
+    }
+    enquiry.status = status;
+    await enquiry.save();
+    res.json(enquiry);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @route   DELETE /api/enquiries/:id
 // @desc    Delete an enquiry record (Super Admin only)
 router.delete('/:id', protect, superAdminOnly, async (req, res) => {

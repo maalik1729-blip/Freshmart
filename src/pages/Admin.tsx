@@ -255,6 +255,31 @@ const Admin = () => {
     }
   };
 
+  // Handle Update Enquiry Status
+  const handleUpdateEnquiryStatus = async (id: string, newStatus: string) => {
+    try {
+      const token = localStorage.getItem("freshmart_token");
+      const response = await fetch(`/api/enquiries/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to update enquiry status");
+      }
+
+      toast.success("Enquiry status updated");
+      loadEnquiries();
+    } catch (err: any) {
+      toast.error(err.message || "Error updating enquiry status");
+    }
+  };
+
   if (loading) return null;
 
   return (
@@ -503,14 +528,15 @@ const Admin = () => {
                               {new Date(e.created_at).toLocaleString()}
                             </td>
                             <td className="px-6 py-4 text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-transparent"
-                                onClick={() => handleDeleteEnquiry(e._id)}
+                              <select
+                                className="border border-input bg-background px-2 py-1 text-xs rounded-none focus:outline-none focus:ring-1 focus:ring-foreground cursor-pointer"
+                                value={e.status || "New"}
+                                onChange={(evt) => handleUpdateEnquiryStatus(e._id, evt.target.value)}
                               >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                                <option value="New">New</option>
+                                <option value="Interested">Interested</option>
+                                <option value="Not Interested">Not Interested</option>
+                              </select>
                             </td>
                           </tr>
                         ))
