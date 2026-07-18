@@ -30,6 +30,7 @@ const Admin = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [form, setForm] = useState({ name: "", category: "Beverages", description: "" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
   const loadAll = async () => {
@@ -60,22 +61,6 @@ const Admin = () => {
           <p className="mt-2 text-xs text-muted-foreground">
             Your user id: <code>{user.id}</code>
           </p>
-
-          <div className="mt-8 border border-border p-6 bg-muted/20 space-y-4">
-            <p className="text-sm font-semibold text-foreground">💡 How to become an Admin (Supabase Setup):</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Since Supabase uses Row Level Security (RLS) policies, you must assign the admin role to your account in your database. 
-              Go to your <strong>Supabase Dashboard &gt; SQL Editor</strong> and run the following query:
-            </p>
-            <pre className="bg-background border border-border p-3 text-xs overflow-x-auto select-all">
-{`INSERT INTO public.user_roles (user_id, role) 
-VALUES ('${user.id}', 'admin')
-ON CONFLICT (user_id, role) DO NOTHING;`}
-            </pre>
-            <p className="text-xs text-muted-foreground font-light">
-              After running the query in your Supabase dashboard, refresh this page to access the Admin Panel.
-            </p>
-          </div>
         </main>
       </div>
     );
@@ -83,17 +68,47 @@ ON CONFLICT (user_id, role) DO NOTHING;`}
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.from("products").insert({
-      name: form.name.trim(),
-      price: 0,
-      category: form.category,
-      description: form.description.trim() || null,
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Product added");
-    setForm({ name: "", category: "Beverages", description: "" });
-    loadAll();
+
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name.trim());
+      formData.append("category", form.category);
+      formData.append("description", form.description.trim());
+      formData.append("price", "0");
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const token = localStorage.getItem("freshmart_token");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers,
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to add product");
+      }
+
+      toast.success("Product added");
+      setForm({ name: "", category: "Beverages", description: "" });
+      setImageFile(null);
+
+      const fileInput = document.getElementById("p-image") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+
+      loadAll();
+    } catch (error: any) {
+      toast.error(error.message || "Error adding product");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const deleteProduct = async (id: string) => {
@@ -145,6 +160,11 @@ ON CONFLICT (user_id, role) DO NOTHING;`}
                 <Textarea id="p-desc" rows={4} maxLength={1000}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="p-image">Product Image (optional)</Label>
+                <Input id="p-image" type="file" accept="image/*"
+                  onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)} />
               </div>
               <Button type="submit" disabled={busy} className="rounded-none">
                 {busy ? "Adding…" : "Add product"}

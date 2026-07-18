@@ -11,8 +11,20 @@ interface DbProduct {
   price: number;
   category: string | null;
   description: string | null;
-  image_url?: string | null;
+  imageUrl?: string;
 }
+
+const getCategoryEmoji = (category: string | null) => {
+  switch (category) {
+    case "Beverages": return "💧";
+    case "Snacks": return "🍪";
+    case "Personal Care": return "🧴";
+    case "Dairy": return "🥛";
+    case "Household": return "🧼";
+    case "Frozen Foods": return "🍕";
+    default: return "📦";
+  }
+};
 
 const Products = () => {
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
@@ -21,7 +33,7 @@ const Products = () => {
   useEffect(() => {
     supabase
       .from("products")
-      .select("id,name,price,category,description,image_url")
+      .select("id,name,price,category,description,imageUrl")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setDbProducts((data as DbProduct[]) ?? []);
@@ -47,24 +59,32 @@ const Products = () => {
         {!loaded ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {combined.map((p) => {
-              return (
-                <Link
-                  key={p.id}
-                  to={`/products/${p.id}`}
-                  className="group block border border-border p-6 transition-all hover:border-foreground hover:shadow-md space-y-2 bg-muted/5"
-                >
-                  <p className="text-xs font-light text-muted-foreground uppercase tracking-widest">{p.category}</p>
-                  <div className="pt-1">
-                    <h3 className="text-base font-medium text-foreground group-hover:underline">{p.name}</h3>
-                  </div>
-                  <p className="line-clamp-3 text-xs font-light text-muted-foreground leading-relaxed pt-1">
-                    {p.description}
-                  </p>
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+            {combined.map((p) => (
+              <Link
+                key={p.id}
+                to={`/products/${p.id}`}
+                className="group block border border-border p-4 transition-colors hover:border-foreground"
+              >
+                <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
+                  {p.imageUrl ? (
+                    <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <span className="text-5xl group-hover:scale-110 transition-transform duration-300 select-none">
+                      {getCategoryEmoji(p.category)}
+                    </span>
+                  )}
+                  <div className="absolute inset-0 bg-black/[0.02]" />
+                </div>
+                <p className="text-xs font-light text-muted-foreground">{p.category}</p>
+                <div className="mt-1">
+                  <h3 className="text-sm font-medium">{p.name}</h3>
+                </div>
+                <p className="mt-2 line-clamp-2 text-xs font-light text-muted-foreground">
+                  {p.description}
+                </p>
+              </Link>
+            ))}
           </div>
         )}
       </main>

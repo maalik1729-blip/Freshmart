@@ -12,10 +12,20 @@ interface Product {
   price: number;
   category: string | null;
   description: string | null;
-  image_url?: string | null;
   imageUrl?: string;
-  isPlaceholder?: boolean;
 }
+
+const getCategoryEmoji = (category: string | null) => {
+  switch (category) {
+    case "Beverages": return "💧";
+    case "Snacks": return "🍪";
+    case "Personal Care": return "🧴";
+    case "Dairy": return "🥛";
+    case "Household": return "🧼";
+    case "Frozen Foods": return "🍕";
+    default: return "📦";
+  }
+};
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +42,7 @@ const ProductDetailPage = () => {
     }
     supabase
       .from("products")
-      .select("id,name,price,category,description,image_url")
+      .select("id,name,price,category,description,imageUrl")
       .eq("id", id)
       .maybeSingle()
       .then(({ data }) => {
@@ -40,7 +50,6 @@ const ProductDetailPage = () => {
         setLoading(false);
       });
   }, [id]);
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,17 +64,23 @@ const ProductDetailPage = () => {
         ) : !product ? (
           <p className="mt-8">Product not found.</p>
         ) : (
-          <div className="mt-12 max-w-xl mx-auto border border-border p-8 md:p-12 space-y-6 bg-muted/5">
-            <div>
-              <p className="text-xs font-light text-muted-foreground uppercase tracking-widest">{product.category}</p>
-              <h1 className="mt-2 text-3xl font-light text-foreground">{product.name}</h1>
+          <div className="mt-8 grid gap-10 md:grid-cols-2">
+            <div className="flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
+              {product.imageUrl ? (
+                <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-8xl select-none">{getCategoryEmoji(product.category)}</span>
+              )}
+              <div className="absolute inset-0 bg-black/[0.02]" />
             </div>
-            <p className="text-sm font-light leading-relaxed text-muted-foreground">
-              {product.description}
-            </p>
-            <div className="pt-4">
-              <Link to="/enquiry" className="block">
-                <Button className="h-12 w-full rounded-none">Enquire about this product</Button>
+            <div>
+              <p className="text-sm text-muted-foreground">{product.category}</p>
+              <h1 className="mt-1 text-3xl font-light">{product.name}</h1>
+              <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
+                {product.description}
+              </p>
+              <Link to="/enquiry">
+                <Button className="mt-10 h-12 w-full rounded-none">Enquire about this product</Button>
               </Link>
             </div>
           </div>
