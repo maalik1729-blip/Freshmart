@@ -509,7 +509,7 @@ const Admin = () => {
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex flex-col gap-1.5">
-                                <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary-foreground border border-primary/25 rounded-none font-medium">
+                                <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary border border-primary/25 rounded-none font-medium">
                                   {e.enquiryType}
                                 </span>
                                 {e.status === "accepted" ? (
