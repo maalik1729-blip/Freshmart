@@ -1,28 +1,28 @@
 import { useEffect } from "react";
-import Header from "../components/header/Header";
-import Footer from "../components/footer/Footer";
+import SimpleNav from "@/components/SimpleNav";
+import Footer from "@/components/footer/Footer";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
-    document.title = "Privacy Policy - Linea Jewelry";
+    document.title = "Privacy Policy - FreshMart";
   }, []);
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
+      <SimpleNav />
+
       <main className="pt-6">
         <div className="max-w-4xl mx-auto px-6 py-12">
           <header className="mb-12 text-center">
             <h1 className="text-4xl font-light text-foreground mb-4">Privacy Policy</h1>
-            <p className="text-muted-foreground">Last updated: January 15, 2024</p>
+            <p className="text-muted-foreground">Last updated: July 18, 2026</p>
           </header>
 
           <div className="prose prose-lg max-w-none space-y-8">
             <section>
               <h2 className="text-2xl font-light text-foreground mb-4">Introduction</h2>
               <p className="text-muted-foreground leading-relaxed">
-                At Linea Jewelry Inc. ("we," "our," or "us"), we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, make a purchase, or interact with our services.
+                At FreshMart ("we," "our," or "us"), we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, submit a product enquiry, or interact with our services.
               </p>
             </section>
 
@@ -32,16 +32,19 @@ const PrivacyPolicy = () => {
                 <div>
                   <h3 className="text-xl font-light text-foreground mb-2">Personal Information</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    We may collect personal information that you provide directly to us, including:
+                    We may collect personal information that you provide directly to us through our WhatsApp enquiry form, including:
                   </p>
                   <ul className="list-disc list-inside text-muted-foreground mt-2 space-y-1">
-                    <li>Name, email address, and contact information</li>
-                    <li>Billing and shipping addresses</li>
-                    <li>Payment information (processed securely through third-party providers)</li>
-                    <li>Account preferences and communication settings</li>
+                    <li>Name, email address, and phone number</li>
+                    <li>Company / Organisation name (optional)</li>
+                    <li>Enquiry details, products of interest, and quantity requested</li>
+                    <li>Communication settings and message history</li>
                   </ul>
+                  <p className="text-muted-foreground leading-relaxed mt-2">
+                    Note: We do not collect or store any financial or billing information as we do not process payments on this website.
+                  </p>
                 </div>
-                
+
                 <div>
                   <h3 className="text-xl font-light text-foreground mb-2">Usage Information</h3>
                   <p className="text-muted-foreground leading-relaxed">
@@ -57,9 +60,8 @@ const PrivacyPolicy = () => {
                 We use the information we collect for various purposes, including:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>Processing and fulfilling your orders</li>
-                <li>Providing customer support and responding to inquiries</li>
-                <li>Sending promotional communications (with your consent)</li>
+                <li>Processing and responding to your product enquiries</li>
+                <li>Providing customer support and communicating with you via WhatsApp or email</li>
                 <li>Improving our website functionality and user experience</li>
                 <li>Preventing fraud and ensuring security</li>
                 <li>Complying with legal obligations</li>
@@ -72,7 +74,7 @@ const PrivacyPolicy = () => {
                 We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>With service providers who assist us in operating our business</li>
+                <li>With service providers who assist us in operating our enquiry system</li>
                 <li>When required by law or to protect our rights</li>
                 <li>In connection with a business transaction (merger, acquisition, etc.)</li>
                 <li>With your explicit consent</li>
@@ -121,15 +123,15 @@ const PrivacyPolicy = () => {
                 If you have any questions about this Privacy Policy or our privacy practices, please contact us at:
               </p>
               <div className="mt-4 text-muted-foreground">
-                <p>Email: privacy@lineajewelry.com</p>
-                <p>Phone: +1 (212) 555-0123</p>
-                <p>Address: 123 Madison Avenue, New York, NY 10016</p>
+                <p>Email: privacy@freshmartstore.com</p>
+                <p>Phone: +44 20 7946 0123</p>
+                <p>Address: 14 Market Street, London, EC1A 1BB</p>
               </div>
             </section>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
