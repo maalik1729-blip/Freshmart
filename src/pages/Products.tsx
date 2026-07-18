@@ -57,9 +57,8 @@ const Products = () => {
                   {p.category ?? "Product"}
                 </div>
                 <p className="text-xs font-light text-muted-foreground">{p.category}</p>
-                <div className="mt-1 flex items-baseline justify-between gap-2">
+                <div className="mt-1">
                   <h3 className="text-sm font-medium">{p.name}</h3>
-                  <p className="text-sm font-light">€{Number(p.price).toLocaleString()}</p>
                 </div>
                 <p className="mt-2 line-clamp-2 text-xs font-light text-muted-foreground">
                   {p.description}
