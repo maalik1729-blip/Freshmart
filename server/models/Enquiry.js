@@ -42,7 +42,8 @@ const EnquirySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'New'
+    enum: ['pending', 'accepted'],
+    default: 'pending'
   },
   created_at: {
     type: Date,

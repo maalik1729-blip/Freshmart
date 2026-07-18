@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus, X, Upload } from "lucide-react";
+import { Trash2, Edit, Plus, X, Upload, Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -255,28 +255,26 @@ const Admin = () => {
     }
   };
 
-  // Handle Update Enquiry Status
-  const handleUpdateEnquiryStatus = async (id: string, newStatus: string) => {
+  // Handle Accept Enquiry
+  const handleAcceptEnquiry = async (id: string) => {
     try {
       const token = localStorage.getItem("freshmart_token");
-      const response = await fetch(`/api/enquiries/${id}/status`, {
-        method: "PATCH",
+      const response = await fetch(`/api/enquiries/${id}/accept`, {
+        method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
       });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.message || "Failed to update enquiry status");
+        throw new Error(errData.message || "Failed to accept enquiry");
       }
 
-      toast.success("Enquiry status updated");
+      toast.success("Enquiry accepted and kept in database!");
       loadEnquiries();
     } catch (err: any) {
-      toast.error(err.message || "Error updating enquiry status");
+      toast.error(err.message || "Error accepting enquiry");
     }
   };
 
@@ -510,9 +508,20 @@ const Admin = () => {
                               {e.company && <div className="text-xs text-muted-foreground">Company: {e.company}</div>}
                             </td>
                             <td className="px-6 py-4">
-                              <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary-foreground border border-primary/25 rounded-none font-medium">
-                                {e.enquiryType}
-                              </span>
+                              <div className="flex flex-col gap-1.5">
+                                <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary-foreground border border-primary/25 rounded-none font-medium">
+                                  {e.enquiryType}
+                                </span>
+                                {e.status === "accepted" ? (
+                                  <span className="inline-block text-[10px] uppercase font-bold text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 w-max">
+                                    Accepted
+                                  </span>
+                                ) : (
+                                  <span className="inline-block text-[10px] uppercase font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 w-max">
+                                    Pending
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td className="px-6 py-4">
                               <div className="font-medium text-foreground">{e.product || "—"}</div>
@@ -528,15 +537,31 @@ const Admin = () => {
                               {new Date(e.created_at).toLocaleString()}
                             </td>
                             <td className="px-6 py-4 text-right">
-                              <select
-                                className="border border-input bg-background px-2 py-1 text-xs rounded-none focus:outline-none focus:ring-1 focus:ring-foreground cursor-pointer"
-                                value={e.status || "New"}
-                                onChange={(evt) => handleUpdateEnquiryStatus(e._id, evt.target.value)}
-                              >
-                                <option value="New">New</option>
-                                <option value="Interested">Interested</option>
-                                <option value="Not Interested">Not Interested</option>
-                              </select>
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  disabled={e.status === "accepted"}
+                                  className={`h-8 w-8 ${
+                                    e.status === "accepted"
+                                      ? "text-green-300 cursor-not-allowed"
+                                      : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  }`}
+                                  onClick={() => handleAcceptEnquiry(e._id)}
+                                  title="Accept & Keep Enquiry"
+                                >
+                                  <Check className="h-5 w-5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => handleDeleteEnquiry(e._id)}
+                                  title="Delete Enquiry"
+                                >
+                                  <X className="h-5 w-5" />
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))
