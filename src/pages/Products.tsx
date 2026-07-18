@@ -11,43 +11,8 @@ interface DbProduct {
   price: number;
   category: string | null;
   description: string | null;
+  image_url?: string | null;
 }
-
-const getEmoji = (category: string | null, name: string) => {
-  const n = name.toLowerCase();
-  if (n.includes("water")) return "💧";
-  if (n.includes("juice") || n.includes("orange")) return "🍊";
-  if (n.includes("tea")) return "🍵";
-  if (n.includes("cola") || n.includes("soda")) return "🥤";
-  if (n.includes("chips")) return "🥔";
-  if (n.includes("bar") || n.includes("granola")) return "🌾";
-  if (n.includes("biscuit") || n.includes("cookie")) return "🍪";
-  if (n.includes("popcorn")) return "🍿";
-  if (n.includes("shampoo")) return "🧴";
-  if (n.includes("wash") || n.includes("soap")) return "🧼";
-  if (n.includes("toothpaste")) return "🦷";
-  if (n.includes("moisturiser") || n.includes("cream")) return "🧴";
-  if (n.includes("milk")) return "🥛";
-  if (n.includes("yoghurt")) return "🫙";
-  if (n.includes("butter")) return "🧈";
-  if (n.includes("cheese")) return "🧀";
-  if (n.includes("laundry") || n.includes("detergent")) return "🧺";
-  if (n.includes("paper") || n.includes("towel")) return "🧻";
-  if (n.includes("cleaner") || n.includes("floor")) return "🪣";
-  if (n.includes("peas")) return "🟢";
-  if (n.includes("ice cream")) return "🍦";
-  if (n.includes("pizza")) return "🍕";
-  if (n.includes("veg")) return "🥦";
-
-  const c = (category || "").toLowerCase();
-  if (c.includes("bev")) return "🥤";
-  if (c.includes("snack")) return "🍪";
-  if (c.includes("personal")) return "🧴";
-  if (c.includes("dairy")) return "🥛";
-  if (c.includes("house")) return "🧼";
-  if (c.includes("froz")) return "❄️";
-  return "📦";
-};
 
 const Products = () => {
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
@@ -56,7 +21,7 @@ const Products = () => {
   useEffect(() => {
     supabase
       .from("products")
-      .select("id,name,price,category,description")
+      .select("id,name,price,category,description,image_url")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setDbProducts((data as DbProduct[]) ?? []);
@@ -83,25 +48,34 @@ const Products = () => {
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
           <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-            {combined.map((p) => (
-              <Link
-                key={p.id}
-                to={`/products/${p.id}`}
-                className="group block border border-border p-4 transition-all hover:border-foreground hover:shadow-md"
-              >
-                <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 text-6xl group-hover:scale-105 transition-transform duration-300 select-none relative">
-                  {getEmoji(p.category, p.name)}
-                  <div className="absolute inset-0 bg-black/[0.02]" />
-                </div>
-                <p className="text-xs font-light text-muted-foreground">{p.category}</p>
-                <div className="mt-1">
-                  <h3 className="text-sm font-medium">{p.name}</h3>
-                </div>
-                <p className="mt-2 line-clamp-2 text-xs font-light text-muted-foreground">
-                  {p.description}
-                </p>
-              </Link>
-            ))}
+            {combined.map((p) => {
+              const img = p.isPlaceholder 
+                ? p.imageUrl 
+                : (p.image_url || "https://images.unsplash.com/photo-1540340061720-c2f3df3273ee?w=600&auto=format&fit=crop&q=80");
+              return (
+                <Link
+                  key={p.id}
+                  to={`/products/${p.id}`}
+                  className="group block border border-border p-4 transition-all hover:border-foreground hover:shadow-md"
+                >
+                  <div className="mb-4 flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative">
+                    <img 
+                      src={img} 
+                      alt={p.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/[0.02]" />
+                  </div>
+                  <p className="text-xs font-light text-muted-foreground">{p.category}</p>
+                  <div className="mt-1">
+                    <h3 className="text-sm font-medium">{p.name}</h3>
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-xs font-light text-muted-foreground">
+                    {p.description}
+                  </p>
+                </Link>
+              );
+            })}
           </div>
         )}
       </main>

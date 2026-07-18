@@ -12,43 +12,10 @@ interface Product {
   price: number;
   category: string | null;
   description: string | null;
+  image_url?: string | null;
+  imageUrl?: string;
+  isPlaceholder?: boolean;
 }
-
-const getEmoji = (category: string | null, name: string) => {
-  const n = name.toLowerCase();
-  if (n.includes("water")) return "💧";
-  if (n.includes("juice") || n.includes("orange")) return "🍊";
-  if (n.includes("tea")) return "🍵";
-  if (n.includes("cola") || n.includes("soda")) return "🥤";
-  if (n.includes("chips")) return "🥔";
-  if (n.includes("bar") || n.includes("granola")) return "🌾";
-  if (n.includes("biscuit") || n.includes("cookie")) return "🍪";
-  if (n.includes("popcorn")) return "🍿";
-  if (n.includes("shampoo")) return "🧴";
-  if (n.includes("wash") || n.includes("soap")) return "🧼";
-  if (n.includes("toothpaste")) return "🦷";
-  if (n.includes("moisturiser") || n.includes("cream")) return "🧴";
-  if (n.includes("milk")) return "🥛";
-  if (n.includes("yoghurt")) return "🫙";
-  if (n.includes("butter")) return "🧈";
-  if (n.includes("cheese")) return "🧀";
-  if (n.includes("laundry") || n.includes("detergent")) return "🧺";
-  if (n.includes("paper") || n.includes("towel")) return "🧻";
-  if (n.includes("cleaner") || n.includes("floor")) return "🪣";
-  if (n.includes("peas")) return "🟢";
-  if (n.includes("ice cream")) return "🍦";
-  if (n.includes("pizza")) return "🍕";
-  if (n.includes("veg")) return "🥦";
-
-  const c = (category || "").toLowerCase();
-  if (c.includes("bev")) return "🥤";
-  if (c.includes("snack")) return "🍪";
-  if (c.includes("personal")) return "🧴";
-  if (c.includes("dairy")) return "🥛";
-  if (c.includes("house")) return "🧼";
-  if (c.includes("froz")) return "❄️";
-  return "📦";
-};
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,7 +32,7 @@ const ProductDetailPage = () => {
     }
     supabase
       .from("products")
-      .select("id,name,price,category,description")
+      .select("id,name,price,category,description,image_url")
       .eq("id", id)
       .maybeSingle()
       .then(({ data }) => {
@@ -73,6 +40,10 @@ const ProductDetailPage = () => {
         setLoading(false);
       });
   }, [id]);
+
+  const img = product?.isPlaceholder 
+    ? product.imageUrl 
+    : (product?.image_url || "https://images.unsplash.com/photo-1540340061720-c2f3df3273ee?w=600&auto=format&fit=crop&q=80");
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,8 +59,12 @@ const ProductDetailPage = () => {
           <p className="mt-8">Product not found.</p>
         ) : (
           <div className="mt-8 grid gap-10 md:grid-cols-2">
-            <div className="flex aspect-square items-center justify-center bg-muted/20 text-9xl select-none relative border border-border">
-              {getEmoji(product.category, product.name)}
+            <div className="flex aspect-square items-center justify-center bg-muted/20 overflow-hidden relative border border-border">
+              <img 
+                src={img} 
+                alt={product.name} 
+                className="w-full h-full object-cover"
+              />
               <div className="absolute inset-0 bg-black/[0.02]" />
             </div>
             <div>
