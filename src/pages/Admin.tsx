@@ -491,13 +491,12 @@ const Admin = () => {
                         <th className="px-6 py-3 font-medium">Message</th>
                         <th className="px-6 py-3 font-medium">Submitted</th>
                         <th className="px-6 py-3 font-medium">Status</th>
-                        <th className="px-6 py-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border font-light">
                       {enquiries.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="px-6 py-10 text-center text-muted-foreground">
+                          <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
                             No enquiries found yet.
                           </td>
                         </tr>
@@ -544,19 +543,6 @@ const Admin = () => {
                                 <option value="interested">Interested</option>
                                 <option value="not_interested">Not Interested</option>
                               </select>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              <div className="flex items-center justify-end">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  onClick={() => handleDeleteEnquiry(e._id)}
-                                  title="Delete Enquiry"
-                                >
-                                  <X className="h-5 w-5" />
-                                </Button>
-                              </div>
                             </td>
                           </tr>
                         ))
