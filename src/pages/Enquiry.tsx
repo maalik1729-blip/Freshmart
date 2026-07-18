@@ -143,6 +143,8 @@ const Enquiry = () => {
                         required
                         maxLength={100}
                         placeholder="John Smith"
+                        pattern="[A-Za-z\s\-\.]{2,100}"
+                        title="Full name must be at least 2 characters and contain only letters, spaces, hyphens, or dots"
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
                       />
@@ -155,6 +157,8 @@ const Enquiry = () => {
                         required
                         maxLength={255}
                         placeholder="john@example.com"
+                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                        title="Please enter a valid email address (e.g. john@example.com)"
                         value={form.email}
                         onChange={(e) => set("email", e.target.value)}
                       />
@@ -166,6 +170,8 @@ const Enquiry = () => {
                         type="tel"
                         maxLength={20}
                         placeholder="+44 20 0000 0000"
+                        pattern="[\+]?[0-9\s\-\(\)]{7,20}"
+                        title="Enter a valid phone number (e.g. +44 20 0000 0000 or +91 98765 43210)"
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value)}
                       />
@@ -176,6 +182,8 @@ const Enquiry = () => {
                         id="company"
                         maxLength={100}
                         placeholder="Optional"
+                        pattern="[A-Za-z0-9\s\-\.&,]{0,100}"
+                        title="Company name can contain letters, numbers, spaces, hyphens, dots, ampersands, or commas"
                         value={form.company}
                         onChange={(e) => set("company", e.target.value)}
                       />
@@ -244,6 +252,8 @@ const Enquiry = () => {
                         required
                         maxLength={50}
                         placeholder="e.g. 100 units, 5 cases"
+                        pattern="[0-9]+[\s]?[A-Za-z\s,\.]{0,40}"
+                        title="Start with a number followed by an optional unit (e.g. 100 units, 5 cases, 50 kg)"
                         value={form.quantity}
                         onChange={(e) => set("quantity", e.target.value)}
                       />
