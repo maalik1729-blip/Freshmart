@@ -26,3 +26,8 @@ dist-ssr
 # Vite temporary config dumps
 vite.config.ts.timestamp-*
 
+# Environment variables (never commit secrets!)
+.env
+.env.*
+!.env.example
+
