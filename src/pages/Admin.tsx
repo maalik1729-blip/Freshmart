@@ -28,7 +28,7 @@ interface Product {
 
 const CATEGORIES = ["Beverages", "Snacks", "Personal Care", "Dairy", "Household", "Frozen Foods"];
 
-const SuperAdmin = () => {
+const Admin = () => {
   const { user, isSuperAdmin, loading, signOut } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   
@@ -88,7 +88,7 @@ const SuperAdmin = () => {
     }
   }, [isSuperAdmin]);
 
-  // Handle Super Admin Login
+  // Handle Admin Login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginBusy(true);
@@ -104,10 +104,10 @@ const SuperAdmin = () => {
       
       if (!data?.user?.isSuperAdmin) {
         await supabase.auth.signOut();
-        throw new Error("You are not authorized as a Super Admin.");
+        throw new Error("You are not authorized as an Admin.");
       }
       
-      toast.success("Successfully authenticated as Super Admin");
+      toast.success("Successfully authenticated as Admin");
       loadProducts();
     } catch (err: any) {
       toast.error(err.message || "Invalid credentials");
@@ -262,10 +262,10 @@ const SuperAdmin = () => {
       {!isSuperAdmin && <SimpleNav />}
       
       {!isSuperAdmin ? (
-        // Super Admin Login View
+        // Admin Login View
         <main className="mx-auto max-w-md px-6 py-24">
           <div className="border border-border p-8 bg-card text-card-foreground">
-            <h1 className="mb-2 text-2xl font-light tracking-tight text-center">Super Admin Access</h1>
+            <h1 className="mb-2 text-2xl font-light tracking-tight text-center">Admin Access</h1>
             <p className="mb-6 text-xs text-muted-foreground text-center">
               Please authenticate using the designated credentials.
             </p>
@@ -298,15 +298,15 @@ const SuperAdmin = () => {
           </div>
         </main>
       ) : (
-        // Super Admin Dashboard View
+        // Admin Dashboard View
         <main className="mx-auto max-w-7xl px-6 py-12">
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
             <div>
-              <h1 className="text-3xl font-light">Super Admin Dashboard</h1>
+              <h1 className="text-3xl font-light">Admin Dashboard</h1>
               <p className="text-xs text-muted-foreground">Catalog CRUD & Enquiries controls</p>
             </div>
             <Button variant="outline" size="sm" className="rounded-none text-xs" onClick={signOut}>
-              Logout Super Admin
+              Logout Admin
             </Button>
           </div>
 
@@ -594,4 +594,4 @@ const SuperAdmin = () => {
   );
 };
 
-export default SuperAdmin;
+export default Admin;

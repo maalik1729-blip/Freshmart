@@ -37,9 +37,9 @@ const SimpleNav = () => {
 
         <div className="flex items-center gap-2">
           {isSuperAdmin && (
-            <Link to="/super-admin">
+            <Link to="/admin">
               <Button size="sm" variant="outline" className="rounded-none">
-                Super Admin
+                Admin
               </Button>
             </Link>
           )}
