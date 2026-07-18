@@ -349,7 +349,7 @@ const Admin = () => {
         // Admin Login View
         <main className="mx-auto max-w-md px-6 py-24">
           <div className="border border-border p-8 bg-card text-card-foreground">
-            <h1 className="mb-2 text-2xl font-light tracking-tight text-center">Admin Access</h1>
+            <h1 className="mb-2 text-2xl font-light tracking-tight text-center">Admin</h1>
             <p className="mb-6 text-xs text-muted-foreground text-center">
               Please authenticate using the designated credentials.
             </p>
@@ -394,9 +394,7 @@ const Admin = () => {
                   disabled={lockedUntil > Date.now()}
                 />
               </div>
-              <p className="text-[10px] text-muted-foreground text-right">
-                🔐 Password hashed with SHA-256 before transmission
-              </p>
+
               <Button
                 type="submit"
                 disabled={loginBusy || lockedUntil > Date.now()}
