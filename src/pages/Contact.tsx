@@ -16,11 +16,11 @@ const Contact = () => (
         </div>
         <div>
           <p className="font-normal text-foreground">Email</p>
-          <p className="text-muted-foreground">hello@lineajewelry.com</p>
+          <p className="text-muted-foreground">hello@freshmartstore.com</p>
         </div>
         <div>
           <p className="font-normal text-foreground">Address</p>
-          <p className="text-muted-foreground">Lorem ipsum street 123, Dolor Sit City</p>
+          <p className="text-muted-foreground">14 Market Street, London, EC1A 1BB</p>
         </div>
       </div>
     </main>
