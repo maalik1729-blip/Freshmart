@@ -168,10 +168,10 @@ const Enquiry = () => {
                       <Input
                         id="phone"
                         type="tel"
-                        maxLength={15}
+                        maxLength={10}
                         placeholder="9876543210"
-                        pattern="[0-9]{7,15}"
-                        title="Please enter a valid phone number containing only numbers (7 to 15 digits)"
+                        pattern="[0-9]{10}"
+                        title="Please enter a valid 10-digit phone number containing only numbers"
                         value={form.phone}
                         onChange={(e) => set("phone", e.target.value.replace(/[^0-9]/g, ""))}
                       />
