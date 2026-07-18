@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
       email,
       password,
       display_name: display_name || '',
-      isAdmin: true // All registered users are admins (members) by default
+      isAdmin: false // Standard registered users are normal members
     });
 
     if (user) {

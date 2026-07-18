@@ -10,7 +10,7 @@ const links = [
 ];
 
 const SimpleNav = () => {
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isSuperAdmin, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur">
@@ -36,10 +36,10 @@ const SimpleNav = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          {isAdmin && (
-            <Link to="/admin">
+          {isSuperAdmin && (
+            <Link to="/super-admin">
               <Button size="sm" variant="outline" className="rounded-none">
-                Admin
+                Super Admin
               </Button>
             </Link>
           )}

@@ -13,7 +13,6 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Enquiry from "./pages/Enquiry";
 import Auth from "./pages/Auth";
-import Admin from "./pages/Admin";
 import SuperAdmin from "./pages/SuperAdmin";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -37,7 +36,6 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/enquiry" element={<Enquiry />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/super-admin" element={<SuperAdmin />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
