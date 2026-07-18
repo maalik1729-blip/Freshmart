@@ -259,7 +259,7 @@ const SuperAdmin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SimpleNav />
+      {!isSuperAdmin && <SimpleNav />}
       
       {!isSuperAdmin ? (
         // Super Admin Login View
