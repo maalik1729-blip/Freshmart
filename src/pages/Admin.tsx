@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus, X, Upload, Check } from "lucide-react";
+import { Trash2, Edit, Plus, X, Upload, Check, Clock, UserCheck, UserX } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -280,6 +280,10 @@ const Admin = () => {
     }
   };
 
+  const pendingCount = enquiries.filter((e) => (e.status || "pending") === "pending").length;
+  const interestedCount = enquiries.filter((e) => e.status === "interested").length;
+  const notInterestedCount = enquiries.filter((e) => e.status === "not_interested").length;
+
   if (loading) return null;
 
   return (
@@ -479,6 +483,48 @@ const Admin = () => {
           ) : (
             // User Enquiry Table View
             <div>
+              {/* Metric Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Pending Enquiries Card */}
+                <div className="border border-amber-200 bg-amber-50/30 p-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-amber-700/80 mb-1">
+                      Pending Enquiries
+                    </p>
+                    <h3 className="text-3xl font-light text-amber-800">{pendingCount}</h3>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                </div>
+
+                {/* Interested Card */}
+                <div className="border border-green-200 bg-green-50/30 p-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-green-700/80 mb-1">
+                      Interested Leads
+                    </p>
+                    <h3 className="text-3xl font-light text-green-800">{interestedCount}</h3>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <UserCheck className="h-5 w-5" />
+                  </div>
+                </div>
+
+                {/* Not Interested Card */}
+                <div className="border border-red-200 bg-red-50/30 p-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-red-700/80 mb-1">
+                      Not Interested
+                    </p>
+                    <h3 className="text-3xl font-light text-red-800">{notInterestedCount}</h3>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <UserX className="h-5 w-5" />
+                  </div>
+                </div>
+              </div>
+
               <h2 className="text-lg font-normal mb-4">Received Enquiries ({enquiries.length})</h2>
               <div className="border border-border bg-card overflow-hidden">
                 <div className="overflow-x-auto">
