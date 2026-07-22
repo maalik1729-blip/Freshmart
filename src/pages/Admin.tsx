@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import SimpleNav from "@/components/SimpleNav";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -337,7 +336,6 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {!isSuperAdmin && <SimpleNav />}
       
       {!isSuperAdmin ? (
         // Admin Login View

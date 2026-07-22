@@ -90,6 +90,8 @@ This section maps all active files in the project directories.
 7. [Phase 7: Enquiry Form Validations and Patterns](#7-enquiry-form-validations-and-patterns)
 8. [Phase 8: Security Measures, Lucide Icon Migration & Cleanup](#8-security-measures-lucide-icon-migration--cleanup)
 9. [Phase 9: Legacy Files Restructuring & Supabase Complete Removal](#9-legacy-files-restructuring--supabase-complete-removal)
+10. [Phase 10: Admin Navigation Header Hiding](#10-admin-navigation-header-hiding)
+11. [Phase 11: Removal of Remaining Legacy Branding](#11-removal-of-remaining-legacy-branding)
 
 ---
 
@@ -138,3 +140,11 @@ This section maps all active files in the project directories.
 *   **Footer Flattening:** Flattened the components tree by moving `Footer.tsx` to `src/components/Footer.tsx` and updating all active page imports.
 *   **Removing Mock Placeholders:** Deleted `src/lib/loremProducts.ts` and updated listing/detail loops to load exclusively from the database.
 *   **Supabase Removal:** Completely deleted the mock Supabase folder (`src/integrations/supabase/`), uninstalled the `@supabase/supabase-js` package dependency, and refactored the auth context (`useAuth.tsx`) and data loaders (`Products.tsx`, `ProductDetailPage.tsx`, `Auth.tsx`, `Admin.tsx`) to make direct REST API requests via native `fetch()`.
+
+## 10. Admin Navigation Header Hiding
+*   **Hiding Header on Login/Dashboard:** Completely removed the `SimpleNav` navigation header from the `Admin.tsx` page so it remains hidden on both the Admin login screen and the control dashboard layout.
+
+## 11. Removal of Remaining Legacy Branding
+*   **SEO Title & Meta Tags:** Updated [index.html](file:///d:/ziya/Projects/remix-of-ecommerce-store-website-template-main/remix-of-ecommerce-store-website-template-main/index.html) header title, author, OpenGraph tags, and descriptions to match FreshMart branding instead of the legacy Linea jewelry brand.
+*   **Favicon Replacement:** Set the client tab favicon icon dynamically via an SVG of a shopping cart emoji (`🛒`).
+*   **Config Comments:** Removed occurrences of the word "Linea" inside code comments across [tailwind.config.ts](file:///d:/ziya/Projects/remix-of-ecommerce-store-website-template-main/remix-of-ecommerce-store-website-template-main/tailwind.config.ts) and [src/index.css](file:///d:/ziya/Projects/remix-of-ecommerce-store-website-template-main/remix-of-ecommerce-store-website-template-main/src/index.css).

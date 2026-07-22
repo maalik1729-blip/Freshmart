@@ -21,3 +21,7 @@ This document details the transition from the legacy jewelry e-commerce layout (
 ### 3. Legal and Contact Alignments
 *   Rewrote `src/pages/TermsOfService.tsx` and `src/pages/PrivacyPolicy.tsx` to match the FreshMart branding.
 *   Updated `src/pages/Contact.tsx` with the active email (`hello@freshmartstore.com`) and local phone details.
+
+### 4. SEO & Tab Branding Updates
+*   Updated `index.html` headers, title, descriptions, and OpenGraph tags to align with FreshMart's grocery store model instead of the legacy Linea jewelry brand.
+*   Replaced the tab favicon with a grocery cart emoji (`🛒`) encoded directly in SVG data to avoid external file dependencies.

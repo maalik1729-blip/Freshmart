@@ -10,3 +10,4 @@ This document records the user interface modifications applied to the navigation
 
 ### 2. Admin Header Handling
 *   Configured the standard header to hide itself when a Super Admin is logged in to maximize workspace space on the `src/pages/Admin.tsx` control dashboard.
+*   Completely removed the `SimpleNav` navigation header from the `src/pages/Admin.tsx` page so it remains hidden on the Admin login screen as well as the main dashboard layout.
