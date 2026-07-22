@@ -1,5 +1,5 @@
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/Footer";
 
 const About = () => (
   <div className="min-h-screen bg-background">

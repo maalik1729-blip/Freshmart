@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
-import { supabase } from "@/integrations/supabase/client";
-import { loremProducts } from "@/lib/loremProducts";
+import Footer from "@/components/Footer";
 
 interface DbProduct {
   id: string;
@@ -19,21 +17,20 @@ const Products = () => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("products")
-      .select("id,name,price,category,description,imageUrl")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setDbProducts((data as DbProduct[]) ?? []);
+    fetch("/api/products")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load products");
+        return res.json();
+      })
+      .then((data) => {
+        setDbProducts(data ?? []);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        console.error("Error loading products:", err);
         setLoaded(true);
       });
   }, []);
-
-  const realCount = dbProducts.length;
-  const combined = [
-    ...dbProducts.map((p) => ({ ...p, isPlaceholder: false as const })),
-    ...loremProducts.slice(0, Math.max(0, 30 - realCount)),
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,14 +38,14 @@ const Products = () => {
       <main className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="mb-2 text-3xl font-light">Products</h1>
         <p className="mb-10 text-sm text-muted-foreground">
-          Showing {combined.length} items{realCount > 0 ? ` · ${realCount} real, ${combined.length - realCount} placeholder` : ""}
+          Showing {dbProducts.length} items
         </p>
 
         {!loaded ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
           <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-            {combined.map((p) => (
+            {dbProducts.map((p) => (
               <Link
                 key={p.id}
                 to={`/products/${p.id}`}

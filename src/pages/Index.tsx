@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "../components/footer/Footer";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
 const features = [

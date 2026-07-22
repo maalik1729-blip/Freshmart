@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +28,7 @@ interface Product {
 const CATEGORIES = ["Beverages", "Snacks", "Personal Care", "Dairy", "Household", "Frozen Foods"];
 
 const Admin = () => {
-  const { user, isSuperAdmin, loading, signOut } = useAuth();
+  const { user, isSuperAdmin, loading, signIn, signOut } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   
   // Login Form State
@@ -132,15 +131,10 @@ const Admin = () => {
       // Hash password with SHA-256 before sending
       const hashedPassword = await sha256(password);
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: username,
-        password: hashedPassword,
-      });
-
-      if (error) throw error;
+      const data = await signIn(username, hashedPassword);
 
       if (!data?.user?.isSuperAdmin) {
-        await supabase.auth.signOut();
+        await signOut();
         throw new Error("You are not authorized as an Admin.");
       }
 

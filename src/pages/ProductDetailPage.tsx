@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
-import { supabase } from "@/integrations/supabase/client";
-import { loremProducts } from "@/lib/loremProducts";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
 interface Product {
@@ -22,19 +20,19 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (!id) return;
-    if (id.startsWith("lorem-")) {
-      const p = loremProducts.find((x) => x.id === id);
-      setProduct(p ? { ...p, description: p.description } : null);
-      setLoading(false);
-      return;
-    }
-    supabase
-      .from("products")
-      .select("id,name,price,category,description,imageUrl")
-      .eq("id", id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setProduct(data as Product | null);
+
+    fetch(`/api/products/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load product");
+        return res.json();
+      })
+      .then((data) => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading product details:", err);
+        setProduct(null);
         setLoading(false);
       });
   }, [id]);

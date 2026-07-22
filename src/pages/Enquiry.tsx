@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import SimpleNav from "@/components/SimpleNav";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/Footer";
 
 const TermsOfService = () => {
   useEffect(() => {
